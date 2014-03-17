@@ -1,23 +1,29 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
+apply from: 'gradle.properties'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-version = '1.0'
+version = "1.0-SNAPSHOT"
+archivesBaseName = "gradle-web-app"
+group = "com.amit.learning"
+
 jar {
 	manifest {
 		attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
 	}
 }
 
+task  'hello' << { println username  }
+
 repositories {
 	maven {
-		url "http://ec2-54-197-176-223.compute-1.amazonaws.com:8081/nexus/content/groups/public"
+		url "${baseUrl}/content/groups/public"
 		credentials {
-			username 'deployment'
-			password 'fidelis@dev'
+			username username
+			password password
 		}
 	}
 }
@@ -34,15 +40,12 @@ test { systemProperties 'property': 'value' }
 uploadArchives {
 	repositories {
 		mavenDeployer {
-			repository(url: "http://ec2-54-197-176-223.compute-1.amazonaws.com:8081/nexus/content/repositories/releases") {
-				authentication(userName: "deployment", password: "fidelis@dev")
+			repository(url: "${baseUrl}/content/repositories/releases") {
+				authentication(userName: username, password: password)
 			}
-			snapshotRepository(url: "http://ec2-54-197-176-223.compute-1.amazonaws.com:8081/nexus/content/repositories/snapshots") {
-				authentication(userName: "deployment", password: "fidelis@dev")
+			snapshotRepository(url: "${baseUrl}/content/repositories/snapshots") {
+				authentication(userName: username, password: password)
 			}
-			pom.version = "1.0-RELEASE"
-			pom.artifactId = "gradle-web-app"
-			pom.groupId = "com.fidelis.learning"
 		}
 	}
 }
